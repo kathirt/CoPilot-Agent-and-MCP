@@ -38,7 +38,7 @@ function createAuthRouter({ usersFile, readJSON, writeJSON, SECRET_KEY, sendEmai
       return res.status(409).json({ message: 'User already exists' });
     }
     const newUser = { username, password, favorites: [] };
-    if (email) newUser.email = email;
+    if (email) newUser.email = email.toLowerCase();
     users.push(newUser);
     writeJSON(usersFile, users);
     res.status(201).json({ message: 'User registered' });
@@ -56,13 +56,14 @@ function createAuthRouter({ usersFile, readJSON, writeJSON, SECRET_KEY, sendEmai
   router.post('/forgot-password', (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: 'Email is required' });
+    const normalizedEmail = email.toLowerCase();
 
-    if (isRateLimited(email.toLowerCase())) {
+    if (isRateLimited(normalizedEmail)) {
       return res.status(429).json({ message: 'Too many requests. Please try again later.' });
     }
 
     const users = readJSON(usersFile);
-    const user = users.find(u => u.email === email);
+    const user = users.find(u => u.email === normalizedEmail);
 
     // Always respond with a generic message to avoid leaking whether an email is registered
     if (user) {
@@ -71,11 +72,11 @@ function createAuthRouter({ usersFile, readJSON, writeJSON, SECRET_KEY, sendEmai
       user.resetPasswordExpires = Date.now() + RESET_TOKEN_EXPIRY_MS;
       writeJSON(usersFile, users);
 
-      const resetLink = `http://localhost:5173/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+      const resetLink = `http://localhost:5173/reset-password?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
       if (typeof sendEmail === 'function') {
-        sendEmail(email, 'Password Reset Request', `Reset your password using this link: ${resetLink}`);
+        sendEmail(normalizedEmail, 'Password Reset Request', `Reset your password using this link: ${resetLink}`);
       } else {
-        console.log(`Password reset link for ${email}: ${resetLink}`);
+        console.log(`Password reset link for ${normalizedEmail}: ${resetLink}`);
       }
     }
 
@@ -87,9 +88,10 @@ function createAuthRouter({ usersFile, readJSON, writeJSON, SECRET_KEY, sendEmai
     if (!email || !token || !newPassword) {
       return res.status(400).json({ message: 'Email, token, and new password are required' });
     }
+    const normalizedEmail = email.toLowerCase();
 
     const users = readJSON(usersFile);
-    const user = users.find(u => u.email === email);
+    const user = users.find(u => u.email === normalizedEmail);
     if (!user || !user.resetPasswordTokenHash || !user.resetPasswordExpires) {
       return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
