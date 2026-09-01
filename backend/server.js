@@ -47,7 +47,7 @@ function authenticateToken(req, res, next) {
 // generated-by-copilot: simple mail "sender" that logs to the console; replace with a real
 // email provider (e.g. nodemailer) in production.
 function sendEmail(to, subject, body) {
-  console.log(`[email] To: ${sanitizeLogMessage(to)} Subject: ${sanitizeLogMessage(subject)} ${sanitizeLogMessage(body)}`);
+  console.log(`[email] To: ${sanitizeLogMessage(to)} | Subject: ${sanitizeLogMessage(subject)} | Body: ${sanitizeLogMessage(body)}`);
 }
 
 // Use central API router
