@@ -13,6 +13,9 @@ const SECRET_KEY = 'test_secret';
 function getToken(username = 'sandra') {
   return jwt.sign({ username }, SECRET_KEY, { expiresIn: '1h' });
 }
+function authHeader(token) {
+  return ['Authorization', ['Bearer', token].join(' ')];
+}
 
 const app = express();
 app.use(express.json());
@@ -109,6 +112,42 @@ describe('Favorites API', () => {
     const res = await request(app)
       .post('/api/favorites')
       .send({ bookId: '1' });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it('DELETE /api/favorites/:bookId should remove and persist a favorite', async () => {
+    const token = getToken('sandra');
+    const users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
+    const sandra = users.find(u => u.username === 'sandra');
+    const favoriteId = sandra.favorites[0];
+
+    const res = await request(app)
+      .delete(`/api/favorites/${favoriteId}`)
+      .set(...authHeader(token));
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toMatch(/removed/);
+
+    const favoritesRes = await request(app)
+      .get('/api/favorites')
+      .set(...authHeader(token));
+    expect(favoritesRes.body.some(book => book.id === favoriteId)).toBe(false);
+
+    const updatedUsers = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
+    const updatedSandra = updatedUsers.find(u => u.username === 'sandra');
+    expect(updatedSandra.favorites).not.toContain(favoriteId);
+  });
+
+  it('DELETE /api/favorites/:bookId should 404 for non-existent user', async () => {
+    const token = getToken('nouser');
+    const res = await request(app)
+      .delete('/api/favorites/1')
+      .set(...authHeader(token));
+    expect(res.statusCode).toBe(404);
+  });
+
+  it('DELETE /api/favorites/:bookId should fail without auth', async () => {
+    const res = await request(app).delete('/api/favorites/1');
     expect(res.statusCode).toBe(401);
   });
 });
