@@ -1,16 +1,12 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const { sanitizeLogMessage } = require('../utils');
 
 // generated-by-copilot: token lifetime and rate-limit window for the forgot-password flow
 const RESET_TOKEN_EXPIRY_MS = 15 * 60 * 1000; // 15 minutes
 const FORGOT_PASSWORD_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const FORGOT_PASSWORD_RATE_LIMIT_MAX = 5;
-
-// generated-by-copilot: sanitize log messages to prevent log injection
-function sanitizeLogMessage(str) {
-  return String(str).replace(/[\r\n]/g, ' ');
-}
 
 function hashToken(token) {
   return crypto.createHash('sha256').update(token).digest('hex');

@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
+const { sanitizeLogMessage } = require('./utils');
 
 const app = express();
 const PORT = 4000;
@@ -42,11 +43,6 @@ function authenticateToken(req, res, next) {
 }
 
 
-
-// generated-by-copilot: sanitize log messages to prevent log injection
-function sanitizeLogMessage(str) {
-  return String(str).replace(/[\r\n]/g, ' ');
-}
 
 // generated-by-copilot: simple mail "sender" that logs to the console; replace with a real
 // email provider (e.g. nodemailer) in production.
