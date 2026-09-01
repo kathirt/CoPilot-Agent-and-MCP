@@ -50,4 +50,26 @@ describe('Auth API', () => {
     const res = await request(app).post('/api/login').send({ username: '' });
     expect(res.statusCode).toBe(401);
   });
+
+  it('POST /api/login should rate limit repeated attempts', async () => {
+    const rateLimitedApp = express();
+    rateLimitedApp.use(express.json());
+    rateLimitedApp.use('/api', createApiRouter({
+      usersFile: path.join(__dirname, '../data/test-users.json'),
+      booksFile: path.join(__dirname, '../data/test-books.json'),
+      readJSON: (file) => require('fs').existsSync(file) ? JSON.parse(require('fs').readFileSync(file, 'utf-8')) : [],
+      writeJSON: (file, data) => require('fs').writeFileSync(file, JSON.stringify(data, null, 2)),
+      authenticateToken: (req, res, next) => next(),
+      SECRET_KEY: 'test_secret',
+    }));
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const res = await request(rateLimitedApp).post('/api/login').send({ username: 'testuser', password: 'wrong' });
+      expect(res.statusCode).toBe(401);
+    }
+
+    const res = await request(rateLimitedApp).post('/api/login').send({ username: 'testuser', password: 'wrong' });
+    expect(res.statusCode).toBe(429);
+    expect(res.body.message).toBe('Too many login attempts. Please try again later.');
+  });
 });
