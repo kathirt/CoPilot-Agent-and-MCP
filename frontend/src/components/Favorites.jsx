@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchFavorites } from '../store/favoritesSlice';
+import { fetchFavorites, removeFavorite } from '../store/favoritesSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Favorites = () => {
@@ -17,6 +17,10 @@ const Favorites = () => {
     }
     dispatch(fetchFavorites(token));
   }, [dispatch, token, navigate]);
+
+  const handleRemoveFavorite = (bookId) => {
+    dispatch(removeFavorite({ token, bookId }));
+  };
 
   if (status === 'loading') return <div>Loading...</div>;
   if (status === 'failed') return <div>Failed to load favorites.</div>;
@@ -45,6 +49,10 @@ const Favorites = () => {
           {favorites.map(book => (
             <li key={book.id}>
               <strong>{book.title}</strong> by {book.author}
+              {' '}
+              <button type="button" onClick={() => handleRemoveFavorite(book.id)}>
+                Remove
+              </button>
             </li>
           ))}
         </ul>
