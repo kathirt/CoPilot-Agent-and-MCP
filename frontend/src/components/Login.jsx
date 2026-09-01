@@ -21,8 +21,8 @@ const Login = () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Login failed');
-      // Username and token are now stored in Redux and localStorage by setUser
-      dispatch(setUser({ token: data.token, username }));
+      // Username, token and role are now stored in Redux and localStorage by setUser
+      dispatch(setUser({ token: data.token, username, role: data.role }));
       navigate('/favorites');
     } catch (err) {
       setError(err.message);
