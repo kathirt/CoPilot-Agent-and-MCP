@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
+const { sanitizeLogMessage } = require('./utils');
 
 const app = express();
 const PORT = 4000;
@@ -46,7 +47,7 @@ function authenticateToken(req, res, next) {
 // generated-by-copilot: simple mail "sender" that logs to the console; replace with a real
 // email provider (e.g. nodemailer) in production.
 function sendEmail(to, subject, body) {
-  console.log(`[email] To: ${to}\nSubject: ${subject}\n${body}`);
+  console.log(`[email] To: ${sanitizeLogMessage(to)} | Subject: ${sanitizeLogMessage(subject)} | Body: ${sanitizeLogMessage(body)}`);
 }
 
 // Use central API router

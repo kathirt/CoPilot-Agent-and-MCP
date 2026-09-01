@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const { sanitizeLogMessage } = require('../utils');
 
 // generated-by-copilot: token lifetime and rate-limit window for the forgot-password flow
 const RESET_TOKEN_EXPIRY_MS = 15 * 60 * 1000; // 15 minutes
@@ -76,7 +77,7 @@ function createAuthRouter({ usersFile, readJSON, writeJSON, SECRET_KEY, sendEmai
       if (typeof sendEmail === 'function') {
         sendEmail(normalizedEmail, 'Password Reset Request', `Reset your password using this link: ${resetLink}`);
       } else {
-        console.log(`Password reset link for ${normalizedEmail}: ${resetLink}`);
+        console.log(`Password reset link for ${sanitizeLogMessage(normalizedEmail)}: ${sanitizeLogMessage(resetLink)}`);
       }
     }
 
