@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const Register = () => {
       const res = await fetch('http://localhost:4000/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, email }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Registration failed');
@@ -42,6 +43,13 @@ const Register = () => {
         value={username}
         onChange={e => setUsername(e.target.value)}
         required
+      />
+      <input
+        name="email"
+        type="email"
+        placeholder="Email (used for password resets)"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
       />
       <input
         name="password"
