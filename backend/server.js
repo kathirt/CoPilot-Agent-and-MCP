@@ -41,6 +41,16 @@ function authenticateToken(req, res, next) {
   });
 }
 
+// Role-based authorization middleware
+function authorizeRoles(...allowedRoles) {
+  return (req, res, next) => {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
+      return res.sendStatus(403);
+    }
+    next();
+  };
+}
+
 
 
 // Use central API router
@@ -51,6 +61,7 @@ app.use('/api', createApiRouter({
   readJSON,
   writeJSON,
   authenticateToken,
+  authorizeRoles,
   SECRET_KEY
 }));
 

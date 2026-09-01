@@ -2,6 +2,7 @@
   {
     "username": "sandra",
     "password": "sandra",
+    "role": "member",
     "favorites": [
       "1",
       "2",
