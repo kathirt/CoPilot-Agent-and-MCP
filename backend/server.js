@@ -43,10 +43,15 @@ function authenticateToken(req, res, next) {
 
 
 
+// generated-by-copilot: sanitize log messages to prevent log injection
+function sanitizeLogMessage(str) {
+  return String(str).replace(/[\r\n]/g, ' ');
+}
+
 // generated-by-copilot: simple mail "sender" that logs to the console; replace with a real
 // email provider (e.g. nodemailer) in production.
 function sendEmail(to, subject, body) {
-  console.log(`[email] To: ${to}\nSubject: ${subject}\n${body}`);
+  console.log(`[email] To: ${sanitizeLogMessage(to)} Subject: ${sanitizeLogMessage(subject)} ${sanitizeLogMessage(body)}`);
 }
 
 // Use central API router
