@@ -43,6 +43,12 @@ function authenticateToken(req, res, next) {
 
 
 
+// generated-by-copilot: simple mail "sender" that logs to the console; replace with a real
+// email provider (e.g. nodemailer) in production.
+function sendEmail(to, subject, body) {
+  console.log(`[email] To: ${to}\nSubject: ${subject}\n${body}`);
+}
+
 // Use central API router
 const createApiRouter = require('./routes');
 app.use('/api', createApiRouter({
@@ -51,7 +57,8 @@ app.use('/api', createApiRouter({
   readJSON,
   writeJSON,
   authenticateToken,
-  SECRET_KEY
+  SECRET_KEY,
+  sendEmail
 }));
 
 app.listen(PORT, () => {

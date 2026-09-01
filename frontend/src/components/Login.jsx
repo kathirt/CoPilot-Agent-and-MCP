@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAppDispatch } from '../store/hooks';
 import { setUser } from '../store/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -50,6 +50,9 @@ const Login = () => {
         required
       />
       <button id="login" type="submit">Login</button>
+      <div>
+        <Link id="forgot-password-link" to="/forgot-password">Forgot Password?</Link>
+      </div>
     </form>
   );
 };
